@@ -11,7 +11,6 @@ public class FlyingEnemy : MonoBehaviour
     public float detectionRange = 5f;
     public float followSpeed = 4f;
 
-    private bool isPatrolling = true;
     private Vector2 initialPosition;
 
      private void Start()
@@ -20,31 +19,29 @@ public class FlyingEnemy : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player").transform;
     }
 
-    private void Update()
+   void Update()
+{
+    if (Vector2.Distance(transform.position, player.position) < detectionRange)
     {
-        if (Vector2.Distance(transform.position, player.position) < detectionRange)
-        {
-            isPatrolling = false;
-            FollowPlayer();
-        }
-        else
-        {
-            isPatrolling = true;
-            Patrol();
-        }
+        FollowPlayer();
     }
-    private void Patrol()
+    else
     {
-        float verticalMovement = Mathf.Sin(Time.time * patrolSpeed) * patrolHeight * Time.deltaTime;
-        enemyRigidbody.velocity = new Vector2(0f, verticalMovement);
+        Patrol();
     }
+}
 
-    private void FollowPlayer()
-    {
-        float step = followSpeed * Time.deltaTime;
-        enemyRigidbody.position = Vector2.MoveTowards(enemyRigidbody.position, player.position, step);
-    }
+void Patrol()
+{
+    float verticalMovement = Mathf.Sin(Time.time * patrolSpeed) * patrolHeight * Time.deltaTime;
+    enemyRigidbody.velocity = new Vector2(0f, verticalMovement);
+}
 
+void FollowPlayer()
+{
+    float step = followSpeed * Time.deltaTime;
+    enemyRigidbody.position = Vector2.MoveTowards(enemyRigidbody.position, player.position, step);
+}
 
 
 }
