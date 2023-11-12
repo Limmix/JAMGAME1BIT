@@ -1,9 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditor.Tilemaps;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class BaseEnemy : MonoBehaviour
 {
@@ -13,6 +10,8 @@ public class BaseEnemy : MonoBehaviour
     [SerializeField] private float patrolSpeed = 2f;
     [SerializeField] private float detectionRange = 5f;
     [SerializeField] private float followSpeed = 4f;
+    [SerializeField] private Transform attackDetectionPoint;
+    [SerializeField] private Vector2 attackDetectionZone = new Vector2(3f, 4f);
 
     private bool isPatrolling = true;
     private Vector2 initialPosition;
@@ -100,7 +99,9 @@ public class BaseEnemy : MonoBehaviour
         scale.x *= -1; // Flip the scale horizontally
         transform.localScale = scale;
     }
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(attackDetectionPoint.position, attackDetectionZone);
+    }
 }
-
-
-
