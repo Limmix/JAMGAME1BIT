@@ -16,12 +16,14 @@ public class BaseEnemy : MonoBehaviour
 
     private bool isPatrolling = true;
     private Vector2 initialPosition;
-    private int patrolDirection = 1; 
+    private int patrolDirection = 1;
+    private bool isFollowingPlayer = false;
 
     private void Start()
     {
         initialPosition = transform.position;
     }
+
     private void Update()
     {
         if (isPatrolling)
@@ -33,6 +35,7 @@ public class BaseEnemy : MonoBehaviour
             FollowPlayer();
         }
     }
+
     private void Patrol()
     {
         float step = patrolSpeed * patrolDirection * Time.deltaTime;
@@ -41,31 +44,63 @@ public class BaseEnemy : MonoBehaviour
         transform.Translate(Vector2.right * step);
 
         // Check if the player is within the detection range
-        if (Vector2.Distance(transform.position, player.position) < detectionRange)
+        if (Vector2.Distance(transform.position, player.position) <= detectionRange)
         {
             isPatrolling = false;
+            isFollowingPlayer = true;
         }
 
-        if (((Vector2)transform.position - initialPosition).sqrMagnitude >= patrolDistance * patrolDistance)
+        if (isFollowingPlayer && Vector2.Distance(transform.position, player.position) > detectionRange)
         {
+            isFollowingPlayer = false;
+        }
+
+        if (!isFollowingPlayer && ((Vector2)transform.position - initialPosition).sqrMagnitude >= patrolDistance * patrolDistance)
+        {
+            Flip();
             // Change direction when reaching the limit
             patrolDirection *= -1;
             initialPosition = transform.position; // Update the initial position after changing direction
         }
     }
+
     private void FollowPlayer()
     {
         float step = followSpeed * Time.deltaTime;
         transform.position = Vector2.MoveTowards(transform.position, player.position, step);
-        Flip();
+
         // Check if the player is now out of the detection range to resume patrolling
+        if (transform.position.x > player.position.x)
+        {
+            transform.localScale = new Vector3(-1, 2.5f, 1);
+            transform.position += Vector3.left * followSpeed * Time.deltaTime;
+        }
+        if (transform.position.x < player.position.x)
+        {
+            transform.localScale = new Vector3(1, 2.5f, 1);
+            transform.position += Vector3.right * followSpeed * Time.deltaTime;
+        }
         if (Vector2.Distance(transform.position, player.position) > detectionRange)
         {
+            if (transform.position.x > player.position.x)
+            {
+                transform.localScale = new Vector3(1, 2.5f, 1);
+            }
+            if (transform.position.x < player.position.x)
+            {
+                transform.localScale = new Vector3(-1, 2.5f, 1);
+            }
             isPatrolling = true;
         }
     }
+
     private void Flip()
     {
-        transform.right = -transform.right;
+        Vector3 scale = transform.localScale;
+        scale.x *= -1; // Flip the scale horizontally
+        transform.localScale = scale;
     }
 }
+
+
+

@@ -194,10 +194,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyRigidbody: {fileID: 7629216862968947483}
-  player: {fileID: 5013634779855112645, guid: f9ce01b354464d94da0336d7f0f0e650, type: 3}
-  patrolHeight: 7
+  player: {fileID: 8773963263793550443, guid: f9ce01b354464d94da0336d7f0f0e650, type: 3}
   patrolWidth: 7
-  descendSpeed: 2
   patrolSpeed: 2
   detectionRange: 5
   followSpeed: 4

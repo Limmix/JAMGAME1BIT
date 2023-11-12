@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private Transform groundCheckPoint;
 
-    [SerializeField] private Vector2 groundCheckSize = new Vector2(1f, 0.1f);
+    [SerializeField] private Vector2 groundCheckSize = new Vector2(2f, 0.1f);
 
     [SerializeField] private LayerMask groundLayerMask;
 
@@ -22,6 +22,10 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");
+
+        bool hasHorizontalInput = horizontalInput != 0;
+
+        playerAnimator.SetBool("isRunning", hasHorizontalInput);
 
         if (horizontalInput > 0f && transform.right.x < 0f)
         {
