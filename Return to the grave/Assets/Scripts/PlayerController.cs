@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private Transform groundCheckPoint;
 
-    [SerializeField] private Vector2 groundCheckSize = new Vector2(2f, 0.1f);
+    private Vector2 groundCheckSize = new Vector2(1.2f, 0.1f);
 
     [SerializeField] private LayerMask groundLayerMask;
 
