@@ -35,7 +35,14 @@ public class FlyingEnemy : MonoBehaviour
             FollowPlayer();
         }
     }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            collision.GetComponent<Health>().TakeDamage(1);
+        }
 
+    }
     private void Patrol()
     {
         float step = patrolSpeed * patrolDirection * Time.deltaTime;
@@ -61,6 +68,7 @@ public class FlyingEnemy : MonoBehaviour
 
     private void FollowPlayer()
     {
+        animator.SetTrigger("Following");
         float step = followSpeed * Time.deltaTime;
         Vector2 targetPosition = Vector2.MoveTowards(transform.position, player.position, step);
         transform.position = new Vector3(targetPosition.x, targetPosition.y, transform.position.z);

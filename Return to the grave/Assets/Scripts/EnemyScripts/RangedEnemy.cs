@@ -11,15 +11,15 @@ public class RangedEnemy : MonoBehaviour
     [SerializeField] private float detectionRange = 5f;
     [SerializeField] private Animator animator;
 
-    [Header("AttackZone")]
-    [SerializeField] private Transform attackDetectionPoint;
-    [SerializeField] private Vector2 attackDetectionZone = new Vector2(3f, 4f);
+    [Header("AttackRange")]
+    [SerializeField] private Collider2D attackCollider;
+    [SerializeField] private LayerMask playerLayer;
 
     private float shootRange = 4f;
     private bool isPatrolling = true;
     private bool isFollowingPlayer = false;
     private Vector2 initialPosition;
-    private int patrolDirection = 1;
+    private int patrolDirection = -1;
     private Transform player;
 
     private void Start()
@@ -40,7 +40,14 @@ public class RangedEnemy : MonoBehaviour
             FollowPlayer();
         }
     }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            collision.GetComponent<Health>().TakeDamage(1);
+        }
 
+    }
     private void Patrol()
     {
         float step = patrolSpeed * patrolDirection * Time.deltaTime;
@@ -89,9 +96,5 @@ public class RangedEnemy : MonoBehaviour
         scale.x *= -1; // Flip the scale horizontally
         transform.localScale = scale;
     }
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(attackDetectionPoint.position, attackDetectionZone);
-    }
+
 }

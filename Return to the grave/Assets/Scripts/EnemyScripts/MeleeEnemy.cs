@@ -11,8 +11,11 @@ public class MeleeEnemy : MonoBehaviour
     [SerializeField] private float detectionRange = 5f;
     [SerializeField] private Animator animator;
 
+    [Header("AttackRange")]
     [SerializeField] private Transform attackDetectionPoint;
     [SerializeField] private Vector2 attackDetectionZone = new Vector2(3f, 4f);
+    [SerializeField] private Collider2D attackCollider;
+    [SerializeField] private LayerMask playerLayer;
 
     private bool isFollowingPlayer = false;
     private bool isPatrolling = true;
@@ -22,13 +25,14 @@ public class MeleeEnemy : MonoBehaviour
 
     private void Start()
     {
+        attackCollider.enabled = false;
         initialPosition = transform.position;
         player = GameObject.FindGameObjectWithTag("Player").transform;
+        StartCoroutine(CheckForPlayerInAttackRange());
     }
 
     private void Update()
     {
-
         if (isPatrolling)
         {
             Patrol();
@@ -36,6 +40,17 @@ public class MeleeEnemy : MonoBehaviour
         else
         {
             FollowPlayer();
+        }
+
+       
+
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            collision.GetComponent<Health>().TakeDamage(1);
+
         }
     }
 
@@ -45,6 +60,7 @@ public class MeleeEnemy : MonoBehaviour
 
         // Move back and forth within the patrol distance
         transform.Translate(Vector2.right * step);
+
         if (Vector2.Distance(transform.position, player.position) < detectionRange)
         {
             isPatrolling = false;
@@ -77,7 +93,39 @@ public class MeleeEnemy : MonoBehaviour
         }
 
     }
+    private IEnumerator CheckForPlayerInAttackRange()
+    {
+        while (FindAnyObjectByType<PlayerController>() != null)
+        {
+            // Create a Raycast hit variable
+            RaycastHit2D hit = Physics2D.Raycast(attackDetectionPoint.position, Vector2.right * transform.localScale.x, attackDetectionZone.x, playerLayer);
+            Debug.Log(hit.collider);
+            // Check if the player is within the attack range
+            if (hit.collider != null && hit.collider.CompareTag("Player"))
+            {
+                Debug.Log("1");
+                // Trigger attack animation
+                animator.SetTrigger("Attack");
+                followSpeed = 0;
 
+                // Enable the attack collider during the attack animation
+                StartCoroutine(EnableAttackCollider());
+                yield return new WaitForSeconds(2f);
+            }
+        }
+    }
+
+    private IEnumerator EnableAttackCollider()
+    {
+        // Enable the attack collider for a short duration
+        attackCollider.enabled = true;
+        if (attackCollider.CompareTag("Player"))
+        {
+            attackCollider.GetComponent<Health>().TakeDamage(1f);
+        }
+        yield return new WaitForSeconds(0.5f); // Adjust the duration as needed
+        attackCollider.enabled = false;
+    }
     private void Flip()
     {
         Vector3 scale = transform.localScale;
@@ -88,6 +136,10 @@ public class MeleeEnemy : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(attackDetectionPoint.position, attackDetectionZone);
+    }
+    private void KeepFollowing()
+    {
+        followSpeed = 2f;
     }
 }
 
