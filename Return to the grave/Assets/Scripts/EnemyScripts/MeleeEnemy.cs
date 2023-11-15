@@ -17,10 +17,12 @@ public class MeleeEnemy : MonoBehaviour
     [SerializeField] private Collider2D attackCollider;
     [SerializeField] private LayerMask playerLayer;
 
+    [Header("Patrolling/Following")]
     private bool isFollowingPlayer = false;
     private bool isPatrolling = true;
     private Vector2 initialPosition;
     private int patrolDirection = 1;
+
     private Transform player;
 
     private void Start()
@@ -99,11 +101,9 @@ public class MeleeEnemy : MonoBehaviour
         {
             // Create a Raycast hit variable
             RaycastHit2D hit = Physics2D.Raycast(attackDetectionPoint.position, Vector2.right * transform.localScale.x, attackDetectionZone.x, playerLayer);
-            Debug.Log(hit.collider);
             // Check if the player is within the attack range
             if (hit.collider != null && hit.collider.CompareTag("Player"))
             {
-                Debug.Log("1");
                 // Trigger attack animation
                 animator.SetTrigger("Attack");
                 followSpeed = 0;
@@ -112,14 +112,16 @@ public class MeleeEnemy : MonoBehaviour
                 StartCoroutine(EnableAttackCollider());
                 yield return new WaitForSeconds(2f);
             }
+            yield return null;
         }
+        yield return null;
     }
 
     private IEnumerator EnableAttackCollider()
     {
         // Enable the attack collider for a short duration
         attackCollider.enabled = true;
-        if (attackCollider.CompareTag("Player"))
+        if (attackCollider.gameObject.CompareTag("Player"))
         {
             attackCollider.GetComponent<Health>().TakeDamage(1f);
         }

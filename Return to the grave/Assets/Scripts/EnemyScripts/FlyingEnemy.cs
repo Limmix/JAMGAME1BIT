@@ -12,9 +12,11 @@ public class FlyingEnemy : MonoBehaviour
     [SerializeField] private float followSpeed = 4f;
     [SerializeField] private Animator animator;
 
+    [Header("Patrolling/Following")]
     private int patrolDirection = 1;
     private bool isPatrolling = true;
     private bool isFollowingPlayer = false;
+
     private Vector2 initialPosition;
     private Transform player;
 

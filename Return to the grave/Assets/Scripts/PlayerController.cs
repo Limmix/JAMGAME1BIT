@@ -23,9 +23,12 @@ public class PlayerController : MonoBehaviour
     private bool knockbackRight;
 
     private bool canAttack = true;
-
-
-
+    private float attackCooldown = 2f;
+    [SerializeField] private Collider2D swordCollider;
+    private void Start()
+    {
+        swordCollider.enabled = false;
+    }
     private void Update()
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");
@@ -48,11 +51,14 @@ public class PlayerController : MonoBehaviour
         {
             Jump();
         }
+        // Trigger appropriate animations based on player's state
+
         if (Input.GetButtonDown("Fire1") && canAttack)
         {
             StartCoroutine(Attack());
         }
 
+        PlayerHeightCheck();
     }
     private void FixedUpdate()
     {
@@ -77,13 +83,13 @@ public class PlayerController : MonoBehaviour
     {
         playerRigidbody2D.velocity = Vector2.zero;
         playerRigidbody2D.AddForce(Vector2.up * jumpForce);
-        
     }
 
     private bool IsOnGround()
     {
         if (Physics2D.OverlapBox(groundCheckPoint.position, groundCheckSize, 0f, groundLayerMask))
         {
+            playerAnimator.SetBool("Grounded", true);
             return true;
         }
         return false;
@@ -99,11 +105,34 @@ public class PlayerController : MonoBehaviour
     }
     private IEnumerator Attack()
     {
+        canAttack = false;
+        swordCollider.enabled = true;
         playerAnimator.SetTrigger("Attack");
-        yield return new WaitForSeconds(2f);
+        speed = 0f;
+        yield return new WaitForSeconds(attackCooldown);
+        canAttack = true;
+        swordCollider.enabled = false;
     }
-    private void Block()
-    {
 
+    private void PlayerHeightCheck()
+    {
+        if (IsOnGround() == false)
+        {
+            bool isJumping = playerRigidbody2D.velocity.y > 0;
+            bool isFalling = playerRigidbody2D.velocity.y < 0;
+
+            if (isJumping)
+            {
+                playerAnimator.SetTrigger("Jump");
+            }
+            else if (isFalling)
+            {
+                playerAnimator.SetTrigger("Fall");
+            }
+        }
+    }
+    private void Move()
+    {
+        speed = 4.5f;
     }
 }

@@ -26,7 +26,7 @@ public class Health : MonoBehaviour
         if (currentHealth > 0)
         {
             animator.SetTrigger("Hurt");
-            StartCoroutine(Invunerability());
+           // StartCoroutine(Invunerability());
         }
         else
         {

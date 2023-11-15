@@ -12,6 +12,8 @@ public class RangedEnemy : MonoBehaviour
     [SerializeField] private Animator animator;
 
     [Header("AttackRange")]
+    [SerializeField] private Transform attackDetectionPoint;
+    [SerializeField] private Vector2 attackDetectionZone = new Vector2(-10f, 4f);
     [SerializeField] private Collider2D attackCollider;
     [SerializeField] private LayerMask playerLayer;
 
@@ -26,6 +28,7 @@ public class RangedEnemy : MonoBehaviour
     {
         initialPosition = transform.position;
         player = GameObject.FindGameObjectWithTag("Player").transform;
+        StartCoroutine(CheckForPlayerInAttackRange());
     }
 
     private void Update()
@@ -89,6 +92,38 @@ public class RangedEnemy : MonoBehaviour
 
         }
     }
+    private IEnumerator CheckForPlayerInAttackRange()
+    {
+        while (FindAnyObjectByType<PlayerController>() != null)
+        {
+            // Create a Raycast hit variable
+            RaycastHit2D hit = Physics2D.Raycast(attackDetectionPoint.position, Vector2.left * transform.localScale.x, attackDetectionZone.x, playerLayer);
+            // Check if the player is within the attack range
+            if (hit.collider != null && hit.collider.CompareTag("Player"))
+            {
+                // Trigger attack animation
+                animator.SetTrigger("Attack");
+                followSpeed = 0;
+
+                // Enable the attack collider during the attack animation
+                StartCoroutine(EnableAttackCollider());
+                yield return new WaitForSeconds(2f);
+            }
+            yield return null;
+        }
+        yield return null;
+    }
+    private IEnumerator EnableAttackCollider()
+    {
+        // Enable the attack collider for a short duration
+        attackCollider.enabled = true;
+        if (attackCollider.gameObject.CompareTag("Player"))
+        {
+            attackCollider.GetComponent<Health>().TakeDamage(1f);
+        }
+        yield return new WaitForSeconds(0.5f); // Adjust the duration as needed
+        attackCollider.enabled = false;
+    }
 
     private void Flip()
     {
@@ -96,5 +131,15 @@ public class RangedEnemy : MonoBehaviour
         scale.x *= -1; // Flip the scale horizontally
         transform.localScale = scale;
     }
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireCube(attackDetectionPoint.position, attackDetectionZone);
+    }
+    private void ShootArrow()
+    {
 
+        //arrowRigidbody.velocity
+        //Instantiate(arrowPrefab, transform.position, Quaternion.identity);
+    }
 }
