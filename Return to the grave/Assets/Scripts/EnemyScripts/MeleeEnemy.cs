@@ -18,7 +18,7 @@ public class MeleeEnemy : MonoBehaviour
     [SerializeField] private LayerMask playerLayer;
     private float range = 2f;
     public bool canAttack = true;
-    private float attackCooldown = 2f;
+    private float attackCooldown = 3.5f;
 
     [Header("Patrolling/Following")]
     private bool isFollowingPlayer = false;
@@ -27,6 +27,8 @@ public class MeleeEnemy : MonoBehaviour
     private int patrolDirection = 1;
 
     private Transform player;
+    [SerializeField]
+    private PlayerController playerController;
 
     private void Start()
     {
@@ -54,8 +56,7 @@ public class MeleeEnemy : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-             
-
+            collision.GetComponent<Health>().TakeDamage(1);
         }
     }
 

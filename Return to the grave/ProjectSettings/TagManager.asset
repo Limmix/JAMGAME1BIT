@@ -7,6 +7,9 @@ TagManager:
   - Enemy
   - Wall
   - Platform
+  - Spear
+  - RangedEnemy
+  - Destructible Wall
   layers:
   - Default
   - TransparentFX
@@ -19,7 +22,7 @@ TagManager:
   - Background
   - Player
   - Enemy
-  - 
+  - Block
   - 
   - 
   - 

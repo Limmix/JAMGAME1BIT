@@ -8,20 +8,28 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Rigidbody2D playerRigidbody2D;
     [SerializeField] private Transform groundCheckPoint;
 
+    [Header("Jump")]
     private Vector2 groundCheckSize = new Vector2(1.2f, 0.1f);
-
     [SerializeField] private LayerMask groundLayerMask;
     [SerializeField] private float speed = 3f;
     [SerializeField] private float jumpForce = 400f;
 
     private float horizontalInput = 0;
 
+    [Header("Attack")]
     private bool canAttack = true;
     private float attackCooldown = 2f;
     [SerializeField] private Collider2D swordCollider;
+
+    [Header("Block")]
+    public bool canBlock = true;
+    private float blockCooldown = 2f;
+    [SerializeField] private Collider2D shieldCollider;
+
     private void Start()
     {
         swordCollider.enabled = false;
+        shieldCollider.enabled = false;
     }
     private void Update()
     {
@@ -46,8 +54,11 @@ public class PlayerController : MonoBehaviour
             Jump();
         }
         // Trigger appropriate animations based on player's state
-
-        if (Input.GetButtonDown("Fire1") && canAttack)
+        if (Input.GetKeyDown(KeyCode.Mouse1) && canBlock)
+        {
+            StartCoroutine(Block());
+        }
+        if (Input.GetKeyDown(KeyCode.Mouse0) && canAttack)
         {
             StartCoroutine(Attack());
         }
@@ -95,7 +106,21 @@ public class PlayerController : MonoBehaviour
         canAttack = true;
         swordCollider.enabled = false;
     }
-
+    private IEnumerator Block()
+    {
+        if (FindAnyObjectByType<PlayerBlock>() != null)
+        {
+            canBlock = false;
+            shieldCollider.enabled = true;
+            playerAnimator.SetTrigger("Block");
+            GetComponent<Health>().Invunerability();
+            speed = 0f;
+            yield return new WaitForSeconds(blockCooldown);
+            canBlock = true;
+            shieldCollider.enabled = false;
+        }
+        yield return null;
+    }
     private void PlayerHeightCheck()
     {
         if (IsOnGround() == false)
@@ -117,4 +142,5 @@ public class PlayerController : MonoBehaviour
     {
         speed = 4.5f;
     }
+
 }

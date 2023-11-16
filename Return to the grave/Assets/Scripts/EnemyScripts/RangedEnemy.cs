@@ -15,18 +15,25 @@ public class RangedEnemy : MonoBehaviour
     [SerializeField] private Vector2 attackDetectionZone = new Vector2(-10f, 4f);
     [SerializeField] private Collider2D attackCollider;
     [SerializeField] private LayerMask playerLayer;
-    public bool canAttack = true;
-    private float attackCooldown = 2f;
+    [SerializeField] private GameObject spearPrefab;
+    [SerializeField] private Rigidbody2D projectileRigidbody;
 
-    private float shootRange = 4f;
+    [Header("variables")]
+    public bool canAttack = true;
+    private float attackCooldown = 5f;
     private bool isPatrolling = true;
     private bool isFollowingPlayer = false;
-    private Vector2 initialPosition;
     private int patrolDirection = -1;
+
+    private Vector2 initialPosition;
+
     private Transform player;
+    [SerializeField]
+    private PlayerController playerController;
 
     private void Start()
     {
+        attackCollider.enabled = false;
         initialPosition = transform.position;
         player = GameObject.FindGameObjectWithTag("Player").transform;
         StartCoroutine(CheckForPlayerInAttackRange());
@@ -88,10 +95,6 @@ public class RangedEnemy : MonoBehaviour
             transform.localScale = new Vector3(1, 1, 1);
             transform.position += Vector3.right * followSpeed * Time.deltaTime;
         }
-        if (Vector2.Distance(transform.position, player.position) < shootRange)
-        {
-
-        }
     }
     private IEnumerator CheckForPlayerInAttackRange()
     {
@@ -105,6 +108,7 @@ public class RangedEnemy : MonoBehaviour
                 canAttack = false;
                 attackCollider.enabled = true;
                 animator.SetTrigger("Attack");
+                ThrowSpear();
                 followSpeed = 0f;
                 yield return new WaitForSeconds(attackCooldown);
                 canAttack = true;
@@ -128,9 +132,7 @@ public class RangedEnemy : MonoBehaviour
     }
     private void ThrowSpear()
     {
-
-        //arrowRigidbody.velocity
-        //Instantiate(arrowPrefab, transform.position, Quaternion.identity);
+        Instantiate(spearPrefab, transform.position, Quaternion.identity);
     }
     private void KeepFollowing()
     {

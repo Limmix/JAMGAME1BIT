@@ -19,6 +19,10 @@ public class FlyingEnemy : MonoBehaviour
 
     private Vector2 initialPosition;
     private Transform player;
+    [SerializeField]
+    private PlayerController playerController;
+    private float cooldown = 2f;
+    private bool canAttack = true;
 
     private void Start()
     {
@@ -39,11 +43,12 @@ public class FlyingEnemy : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Player"))
+        if (collision.gameObject.CompareTag("Player") && canAttack)
         {
-            collision.GetComponent<Health>().TakeDamage(1);
-        }
+             collision.GetComponent<Health>().TakeDamage(1);
+            StartCoroutine(AttackCooldown());
 
+        }
     }
     private void Patrol()
     {
@@ -91,5 +96,11 @@ public class FlyingEnemy : MonoBehaviour
         Vector3 scale = transform.localScale;
         scale.x *= -1; // Flip the scale horizontally
         transform.localScale = scale;
+    }
+    private IEnumerator AttackCooldown()
+    {
+        canAttack = false;
+        yield return new WaitForSeconds(cooldown);
+        canAttack = true;
     }
 }

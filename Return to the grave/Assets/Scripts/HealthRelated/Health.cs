@@ -43,7 +43,7 @@ public class Health : MonoBehaviour
     {
         currentHealth = Mathf.Clamp(currentHealth + heal, 0, startingHealth);
     }
-    private IEnumerator Invunerability()
+    public IEnumerator Invunerability()
     {
         Physics2D.IgnoreLayerCollision(9, 10, true);
         yield return new WaitForSeconds(1f);

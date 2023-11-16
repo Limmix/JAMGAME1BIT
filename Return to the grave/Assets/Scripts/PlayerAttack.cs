@@ -12,5 +12,10 @@ public class PlayerAttack : MonoBehaviour
         {
             Destroy(collision.gameObject);
         }
+        if (collision.gameObject.CompareTag("RangedEnemy"))
+        {
+            Destroy(collision.gameObject);
+        }
+
     }
 }
