@@ -5,12 +5,7 @@ using UnityEngine.UI;
 
 public class UIController : MonoBehaviour
 {
-    [SerializeField]
-    private Image Heart1;
-    [SerializeField]
-    private Image Heart2;
-    [SerializeField]
-    private Image Heart3;
+    [SerializeField] private Canvas canvas;
     // Start is called before the first frame update
     void Start()
     {

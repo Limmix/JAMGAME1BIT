@@ -16,12 +16,6 @@ public class PlayerController : MonoBehaviour
 
     private float horizontalInput = 0;
 
-    [Header("Knockback")]
-    private float knockbackForce;
-    private float knockbackCounter;
-    private float knockbackTime;
-    private bool knockbackRight;
-
     private bool canAttack = true;
     private float attackCooldown = 2f;
     [SerializeField] private Collider2D swordCollider;
@@ -65,18 +59,6 @@ public class PlayerController : MonoBehaviour
         float horizontalSpeed = horizontalInput * speed;
         playerRigidbody2D.velocity =
                 new Vector2(horizontalSpeed, playerRigidbody2D.velocity.y);
-        //if (knockbackCounter <= 0)
-        //{
-
-        //}
-        //else
-        //{
-        //    if(knockbackRight == true)
-        //    {
-        //        playerRigidbody2D.velocity = new Vector2(knockbackForce)
-        //    }
-        //}
-
     }
 
     private void Jump()

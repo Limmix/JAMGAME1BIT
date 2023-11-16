@@ -26,7 +26,7 @@ public class Health : MonoBehaviour
         if (currentHealth > 0)
         {
             animator.SetTrigger("Hurt");
-           // StartCoroutine(Invunerability());
+            StartCoroutine(Invunerability());
         }
         else
         {
@@ -46,7 +46,7 @@ public class Health : MonoBehaviour
     private IEnumerator Invunerability()
     {
         Physics2D.IgnoreLayerCollision(9, 10, true);
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(1f);
         Physics2D.IgnoreLayerCollision(9, 10, false);
     }
 }

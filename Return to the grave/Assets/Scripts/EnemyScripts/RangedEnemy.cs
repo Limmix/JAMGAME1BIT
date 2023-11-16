@@ -12,10 +12,11 @@ public class RangedEnemy : MonoBehaviour
     [SerializeField] private Animator animator;
 
     [Header("AttackRange")]
-    [SerializeField] private Transform attackDetectionPoint;
     [SerializeField] private Vector2 attackDetectionZone = new Vector2(-10f, 4f);
     [SerializeField] private Collider2D attackCollider;
     [SerializeField] private LayerMask playerLayer;
+    public bool canAttack = true;
+    private float attackCooldown = 2f;
 
     private float shootRange = 4f;
     private bool isPatrolling = true;
@@ -97,32 +98,21 @@ public class RangedEnemy : MonoBehaviour
         while (FindAnyObjectByType<PlayerController>() != null)
         {
             // Create a Raycast hit variable
-            RaycastHit2D hit = Physics2D.Raycast(attackDetectionPoint.position, Vector2.left * transform.localScale.x, attackDetectionZone.x, playerLayer);
+            RaycastHit2D hit = Physics2D.Raycast(attackCollider.bounds.center, Vector2.left * transform.localScale.x, attackDetectionZone.x, playerLayer);
             // Check if the player is within the attack range
             if (hit.collider != null && hit.collider.CompareTag("Player"))
             {
-                // Trigger attack animation
+                canAttack = false;
+                attackCollider.enabled = true;
                 animator.SetTrigger("Attack");
-                followSpeed = 0;
-
-                // Enable the attack collider during the attack animation
-                StartCoroutine(EnableAttackCollider());
-                yield return new WaitForSeconds(2f);
+                followSpeed = 0f;
+                yield return new WaitForSeconds(attackCooldown);
+                canAttack = true;
+                attackCollider.enabled = false;
             }
             yield return null;
         }
         yield return null;
-    }
-    private IEnumerator EnableAttackCollider()
-    {
-        // Enable the attack collider for a short duration
-        attackCollider.enabled = true;
-        if (attackCollider.gameObject.CompareTag("Player"))
-        {
-            attackCollider.GetComponent<Health>().TakeDamage(1f);
-        }
-        yield return new WaitForSeconds(0.5f); // Adjust the duration as needed
-        attackCollider.enabled = false;
     }
 
     private void Flip()
@@ -134,12 +124,16 @@ public class RangedEnemy : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.blue;
-        Gizmos.DrawWireCube(attackDetectionPoint.position, attackDetectionZone);
+        Gizmos.DrawWireCube(attackCollider.bounds.center, attackDetectionZone);
     }
-    private void ShootArrow()
+    private void ThrowSpear()
     {
 
         //arrowRigidbody.velocity
         //Instantiate(arrowPrefab, transform.position, Quaternion.identity);
+    }
+    private void KeepFollowing()
+    {
+        followSpeed = 2f;
     }
 }
