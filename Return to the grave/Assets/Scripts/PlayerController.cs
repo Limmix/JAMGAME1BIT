@@ -26,10 +26,18 @@ public class PlayerController : MonoBehaviour
     private float blockCooldown = 2f;
     [SerializeField] private Collider2D shieldCollider;
 
+    [Header("SlashAttack")]
+    public bool canSlashAttack = true;
+    private float slashAttackCooldown = 10f;
+    [SerializeField] private GameObject slashProjectilePrefab;
+
+
+
     private void Start()
     {
         swordCollider.enabled = false;
         shieldCollider.enabled = false;
+        
     }
     private void Update()
     {
@@ -62,7 +70,10 @@ public class PlayerController : MonoBehaviour
         {
             StartCoroutine(Attack());
         }
-
+        if (Input.GetKeyDown(KeyCode.E) && canSlashAttack)
+        {
+            StartCoroutine(SlashAttack());
+        }
         PlayerHeightCheck();
     }
     private void FixedUpdate()
@@ -120,6 +131,24 @@ public class PlayerController : MonoBehaviour
             shieldCollider.enabled = false;
         }
         yield return null;
+    }
+    private IEnumerator SlashAttack()
+    {
+        if (slashProjectilePrefab.GetComponent<SlashProjectile>() != null)
+        {
+            canSlashAttack = false;
+            playerAnimator.SetTrigger("SlashAttack");
+            speed = 0f;
+            yield return new WaitForSeconds(slashAttackCooldown);
+            canSlashAttack = true;
+        }
+        yield return null;
+    }
+    private void CallProjectile()
+    {
+      Vector2 placement = new Vector2(transform.position.x, transform.position.y + 0.3f);
+        Instantiate(slashProjectilePrefab, placement, Quaternion.identity);
+
     }
     private void PlayerHeightCheck()
     {

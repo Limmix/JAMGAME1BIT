@@ -7,18 +7,42 @@ public class SlashProjectile : MonoBehaviour
     [SerializeField] private Rigidbody2D projectileRigidbody;
     [SerializeField] private Collider2D Collider;
 
-    private float horizontalInput = 1f;
-    private float speed = 3f;
+    private float horizontalInput = 2f;
+    private float speed = 5f;
 
-    private void FixedUpdate()
+    private PlayerController playerController;
+    private Transform player;
+    private void Start()
     {
-        float horizontalSpeed = horizontalInput * speed;
-        projectileRigidbody.velocity =
-                new Vector2(horizontalSpeed, projectileRigidbody.velocity.y);
+        player = GameObject.FindGameObjectWithTag("Player").transform;
+        playerController = GetComponent<PlayerController>();
+        CheckPlayerSide();
+    }
+
+    public void CheckPlayerSide()
+    {
+        if (player.right.x > 0f)
+        {
+            transform.localScale = new Vector3(1, 1, 1);
+            float horizontalSpeed = horizontalInput * speed;
+            projectileRigidbody.velocity = new Vector2(horizontalSpeed, projectileRigidbody.velocity.y);
+        }
+        else if (player.right.x < 0f)
+        {
+            transform.localScale = new Vector3(-1, 1, 1);
+            float horizontalSpeed = -horizontalInput * speed;
+            projectileRigidbody.velocity = new Vector2(horizontalSpeed, projectileRigidbody.velocity.y);
+        }
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Enemy"))
+        {
+            Destroy(collision.gameObject);
+            DestroyProjectile();
+
+        }
+        if (collision.gameObject.CompareTag("RangedEnemy"))
         {
             Destroy(collision.gameObject);
             DestroyProjectile();

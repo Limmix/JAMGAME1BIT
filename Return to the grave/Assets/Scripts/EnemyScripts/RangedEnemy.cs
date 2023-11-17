@@ -16,7 +16,6 @@ public class RangedEnemy : MonoBehaviour
     [SerializeField] private Collider2D attackCollider;
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private GameObject spearPrefab;
-    [SerializeField] private Rigidbody2D projectileRigidbody;
 
     [Header("variables")]
     public bool canAttack = true;
