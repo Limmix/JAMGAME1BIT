@@ -47,7 +47,6 @@ public class FlyingEnemy : MonoBehaviour
         {
              collision.GetComponent<Health>().TakeDamage(1);
             StartCoroutine(AttackCooldown());
-
         }
     }
     private void Patrol()

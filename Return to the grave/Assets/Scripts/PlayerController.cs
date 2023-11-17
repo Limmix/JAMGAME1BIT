@@ -31,6 +31,7 @@ public class PlayerController : MonoBehaviour
     private float slashAttackCooldown = 10f;
     [SerializeField] private GameObject slashProjectilePrefab;
 
+    [SerializeField] private GameManager gameManager;
 
 
     private void Start()
@@ -119,7 +120,7 @@ public class PlayerController : MonoBehaviour
     }
     private IEnumerator Block()
     {
-        if (FindAnyObjectByType<PlayerBlock>() != null)
+        if (gameManager.canBlock == true && FindAnyObjectByType<PlayerBlock>() != null)
         {
             canBlock = false;
             shieldCollider.enabled = true;
@@ -130,17 +131,25 @@ public class PlayerController : MonoBehaviour
             canBlock = true;
             shieldCollider.enabled = false;
         }
+        else
+        {
+            yield return null;
+        }
         yield return null;
     }
     private IEnumerator SlashAttack()
     {
-        if (slashProjectilePrefab.GetComponent<SlashProjectile>() != null)
+        if (gameManager.canSlash == true && slashProjectilePrefab.GetComponent<SlashProjectile>() != null)
         {
             canSlashAttack = false;
             playerAnimator.SetTrigger("SlashAttack");
             speed = 0f;
             yield return new WaitForSeconds(slashAttackCooldown);
             canSlashAttack = true;
+        }
+        else
+        {
+            yield return null;
         }
         yield return null;
     }
