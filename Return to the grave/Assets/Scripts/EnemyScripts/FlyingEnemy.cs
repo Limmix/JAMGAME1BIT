@@ -21,9 +21,8 @@ public class FlyingEnemy : MonoBehaviour
     private Transform player;
     [SerializeField]
     private PlayerController playerController;
-    private float cooldown = 2f;
+    private float cooldown = 3f;
     private bool canAttack = true;
-
     private void Start()
     {
         initialPosition = transform.position;
@@ -98,6 +97,7 @@ public class FlyingEnemy : MonoBehaviour
     }
     private IEnumerator AttackCooldown()
     {
+
         canAttack = false;
         yield return new WaitForSeconds(cooldown);
         canAttack = true;

@@ -9,7 +9,7 @@ public class MeleeEnemy : MonoBehaviour
     [SerializeField] private float patrolSpeed = 2f;
     [SerializeField] private float followSpeed = 4f;
     [SerializeField] private float detectionRange = 5f;
-    
+
     [SerializeField] private Animator animator;
 
     [Header("AttackRange")]
@@ -18,7 +18,7 @@ public class MeleeEnemy : MonoBehaviour
     [SerializeField] private LayerMask playerLayer;
     private float range = 2f;
     public bool canAttack = true;
-    private float attackCooldown = 3.5f;
+    private float attackCooldown = 4f;
 
     [Header("Patrolling/Following")]
     private bool isFollowingPlayer = false;
@@ -29,7 +29,8 @@ public class MeleeEnemy : MonoBehaviour
     private Transform player;
     [SerializeField]
     private PlayerController playerController;
-
+    private float cooldown = 2f;
+    private bool canCollide = true;
     private void Start()
     {
         attackCollider.enabled = false;
@@ -49,14 +50,15 @@ public class MeleeEnemy : MonoBehaviour
             FollowPlayer();
         }
 
-       
+
 
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Player"))
+        if (collision.gameObject.CompareTag("Player") && canCollide && playerController.canBlock == true)
         {
-            collision.GetComponent<Health>().TakeDamage(1);
+            collision.GetComponent<Health>().TakeDamage(0);
+            StartCoroutine(AttackCooldown());
         }
     }
 
@@ -108,10 +110,10 @@ public class MeleeEnemy : MonoBehaviour
             // Check if the player is within the attack range
             if (hit.collider != null && hit.collider.CompareTag("Player"))
             {
+                followSpeed = 0f;
                 canAttack = false;
                 attackCollider.enabled = true;
                 animator.SetTrigger("Attack");
-                followSpeed = 0f;
                 yield return new WaitForSeconds(attackCooldown);
                 canAttack = true;
                 attackCollider.enabled = false;
@@ -132,9 +134,17 @@ public class MeleeEnemy : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(attackCollider.bounds.center, attackDetectionZone);
     }
-    private void KeepFollowing()
+    private IEnumerator KeepFollowing()
     {
-        followSpeed = 2f;
+
+        yield return new WaitForSeconds(0.5f);
+        followSpeed = 1.5f;
+    }
+    private IEnumerator AttackCooldown()
+    {
+        canCollide = false;
+        yield return new WaitForSeconds(cooldown);
+        canCollide = true;
     }
 }
 

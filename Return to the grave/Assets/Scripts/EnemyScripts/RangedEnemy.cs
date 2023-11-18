@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class RangedEnemy : MonoBehaviour
@@ -23,6 +24,8 @@ public class RangedEnemy : MonoBehaviour
     private bool isPatrolling = true;
     private bool isFollowingPlayer = false;
     private int patrolDirection = -1;
+    private float cooldown = 2f;
+    private bool canCollide = true;
 
     private Vector2 initialPosition;
 
@@ -52,9 +55,10 @@ public class RangedEnemy : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Player"))
+        if (collision.gameObject.CompareTag("Player") && canCollide)
         {
             collision.GetComponent<Health>().TakeDamage(1);
+            StartCoroutine(AttackCooldown());
         }
 
     }
@@ -133,8 +137,15 @@ public class RangedEnemy : MonoBehaviour
     {
         Instantiate(spearPrefab, transform.position, Quaternion.identity);
     }
-    private void KeepFollowing()
+    private IEnumerator KeepFollowing()
     {
-        followSpeed = 2f;
+        yield return new WaitForSeconds(0.5f);
+        followSpeed = 1.5f;
+    }
+    private IEnumerator AttackCooldown()
+    {
+        canCollide = false;
+        yield return new WaitForSeconds(cooldown);
+        canCollide = true;
     }
 }

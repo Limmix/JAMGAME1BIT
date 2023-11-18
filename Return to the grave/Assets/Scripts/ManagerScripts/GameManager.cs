@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    [Header ("Disable Scripts")]
+    [Header("Disable Scripts")]
     [SerializeField]
     private PlayerBlock playerBlock;
     [SerializeField]
@@ -22,45 +22,26 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private Animator playerAnimator;
 
-    [Header("Change CameraLimiterPoints")]
-    [SerializeField]
-    private PolygonCollider2D polygonCollider;
-    private Vector2[] initialPoints;
-
-    [Header("Positions to trigger events")]
-    public float threshold1 = 80f;
-    public float threshold2 = 100f;
-    private Dictionary<float, bool> thresholdStatus = new Dictionary<float, bool>();
-
     private void Start()
     {
         slashProjectilePrefab.GetComponent<SlashProjectile>().enabled = true;
-        initialPoints = polygonCollider.points;
-
-        thresholdStatus.Add(threshold1, false);
-        thresholdStatus.Add(threshold2, false);
     }
 
     // Update is called once per frame
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Z))
+        if (playerTransform.transform.position.x > 236f)
+        {
+            LoseSlashAttack();
+        }
+        if (playerTransform.transform.position.x > 465f)
         {
             DisableBlock();
         }
-        foreach (var threshold in thresholdStatus.Keys)
+        if (playerTransform.transform.position.x > 706f)
         {
-            if (transform.position.x > threshold && !thresholdStatus[threshold])
-            {
-                ChangeColliderPoints(threshold);
-                thresholdStatus[threshold] = true;
-            }
+            LoseJump();
         }
-    }
-    private void DisableSlashAttack()
-    {
-        canSlash = false;
-        slashProjectilePrefab.GetComponent<SlashProjectile>().enabled = false;
     }
     private void DisableBlock()
     {
@@ -68,68 +49,22 @@ public class GameManager : MonoBehaviour
         playerBlock.enabled = false;
         if (newAnimatorController != null)
         {
-            // Change the animator controller
             playerAnimator.runtimeAnimatorController = newAnimatorController;
         }
     }
-    private void LoseSlashAttackScene()
-    {
-            // Set points using direct assignment
-            polygonCollider.points = new Vector2[]
-            {
-            new Vector2(0f, 0f),
-            new Vector2(1f, 0f),
-            new Vector2(1f, 1f),
-            new Vector2(0f, 1f)
-            };
-    }
-
-    private void LoseBlockScene()
-    {
-        polygonCollider.points = new Vector2[]
-        {
-            new Vector2(-1f, -1f),
-            new Vector2(0f, -1f),
-            new Vector2(0f, 0f),
-            new Vector2(-1f, 0f)
-        };
-    }
-    private void LoseJumpScene()
+    private void LoseSlashAttack()
     {
         
-        polygonCollider.points = new Vector2[]
-        {
-            new Vector2(0f, 0f),
-            new Vector2(1f, 0f),
-            new Vector2(1f, 1f),
-            new Vector2(0f, 1f)
-        };
+        canSlash = false;
+        slashProjectilePrefab.GetComponent<SlashProjectile>().enabled = false;
     }
-    private void FinalScene()
+    private void LoseJump()
     {
-        polygonCollider.points = new Vector2[]
-        {
-            new Vector2(0f, 0f),
-            new Vector2(1f, 0f),
-            new Vector2(1f, 1f),
-            new Vector2(0f, 1f)
-        };
+        canJump = false;
+        playerController.jumpForce = 0f;
+
     }
 
-    private void StartingCameraLimiter()
-    {
-        polygonCollider.points = initialPoints;
-    }
-    private void ChangeColliderPoints(float threshold)
-    {
-        // Implement your logic to change collider points based on the threshold
-        if (threshold == threshold1)
-        {
-           DisableSlashAttack();
-        }
-        else if (threshold == threshold2)
-        {
-           StartingCameraLimiter();
-        }
-    }
+
+
 }

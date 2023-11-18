@@ -11,14 +11,10 @@ public class Spear : MonoBehaviour
 
     private float speed = 6f;
     private float horizontalInput = -2f;
-
     private void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
         playerController = GetComponent<PlayerController>();
-    }
-    private void FixedUpdate()
-    {
         CheckPlayerPosition();
     }
     private void CheckPlayerPosition()
@@ -34,12 +30,10 @@ public class Spear : MonoBehaviour
             float horizontalSpeed = -horizontalInput * speed;
             projectileRigidbody.velocity = new Vector2(horizontalSpeed, projectileRigidbody.velocity.y);
         }
-
-
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Player") && playerController.canBlock == true)
+        if (collision.gameObject.CompareTag("Player"))
         {
             collision.GetComponent<Health>().TakeDamage(1);
             DestroyProjectile();
@@ -50,11 +44,6 @@ public class Spear : MonoBehaviour
         }
         if (collision.gameObject.CompareTag("Platform"))
         {
-            DestroyProjectile();
-        }
-        if (collision.gameObject.CompareTag("DestructibleWall"))
-        {
-            Destroy(collision.gameObject);
             DestroyProjectile();
         }
     }

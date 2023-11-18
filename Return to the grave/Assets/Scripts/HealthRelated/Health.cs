@@ -8,13 +8,10 @@ public class Health : MonoBehaviour
     private float startingHealth = 4f;
     public float currentHealth { get; private set; }
     [SerializeField] private Animator animator;
-    private bool dead;
 
     [Header("Invunerability")]
     [SerializeField] private float invunerability;
-
-
-
+    public bool dead;
     private void Awake()
     {
         currentHealth = startingHealth;
@@ -29,13 +26,11 @@ public class Health : MonoBehaviour
         }
         else
         {
-            if (!dead)
-            {
+            if (currentHealth == 0)
+            
                 animator.SetTrigger("Dead");
                 GetComponent<PlayerController>().enabled = false;
-                dead = true;
-            }
-
+            dead = true;
         }
     }
     public void Heal(float heal)
@@ -45,7 +40,7 @@ public class Health : MonoBehaviour
     public IEnumerator Invunerability()
     {
         Physics2D.IgnoreLayerCollision(9, 10, true);
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2f);
         Physics2D.IgnoreLayerCollision(9, 10, false);
     }
 }

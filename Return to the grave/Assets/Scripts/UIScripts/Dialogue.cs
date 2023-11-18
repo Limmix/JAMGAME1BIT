@@ -9,7 +9,8 @@ public class Dialogue : MonoBehaviour
 
     [TextArea(3,10)]
     [SerializeField] private string[] lines;
-    [SerializeField] private float textSpeed ;
+    [SerializeField] private float textSpeed;
+    [SerializeField] private AudioManager audioManager;
     private int index;
     // Start is called before the first frame update
     private void Start()
@@ -28,6 +29,7 @@ public class Dialogue : MonoBehaviour
         foreach (char c in lines[index].ToCharArray())
         {
             textComponent.text += c;
+            audioManager.TextSound();
             yield return new WaitForSeconds(textSpeed);
         }
     }
